@@ -80,7 +80,7 @@ class StochasticDifferentialEquation(eqx.Module):
         pass
 
     @eqx.filter_jit
-    def sample_path(self, key, t0, t1, x0, dt=1e-3, dt0=1e-3):
+    def sample_path(self, key, t0, t1, x0, dt=1e-3, dt0=1e-3, **kwargs):
         """Sample a path from the SDE."""
         from diffrax import diffeqsolve, ControlTerm, Euler, MultiTerm, ODETerm, SaveAt, VirtualBrownianTree
         drift = lambda t, x, args: self.drift(x, self.control_function._eval(t))
@@ -90,7 +90,7 @@ class StochasticDifferentialEquation(eqx.Module):
         solver = Euler()
         ts = times_between(t0, t1, dt)
         saveat = SaveAt(ts=ts)
-        sol = diffeqsolve(terms, solver, t0, t1, dt0=dt0, y0=x0, saveat=saveat)
+        sol = diffeqsolve(terms, solver, t0, t1, dt0=dt0, y0=x0, saveat=saveat, **kwargs)
         return sol
     
  
@@ -118,40 +118,3 @@ class EulerMaruyama(TransitionProbability):
         drift = self.sde.drift(x_prev, u)
         diffusion = self.sde.diffusion(x_prev, u)
         return x_prev + drift * self.dt + diffusion * jr.normal(key, shape=x_prev.shape) * jnp.sqrt(self.dt)
-
-
-if __name__ == '__main__':
-
-    class SimpleSDE(StochasticDifferentialEquation):
-        """A simple SDE with a linear drift and a constant diffusion."""
-
-        mu: jax.Array
-        log_sigma: jax.Array
-
-        @property
-        def sigma(self):
-            return jnp.exp(self.log_sigma)
-
-        def __init__(self, mu, sigma):
-            super().__init__()
-            self.mu = jnp.array(mu)
-            self.log_sigma = jnp.log(sigma)
-
-        def drift(self, x, u):
-            return self.mu * x
-
-        def diffusion(self, x, u):
-            return jnp.array([[self.sigma]])
-    
-    sde = SimpleSDE(0.1, 0.1)
-    print(sde)
-
-    key = jr.PRNGKey(0)
-    x0 = jnp.array([0.])
-    sol = sde.sample_path(key, 0., 10., x0, dt=1e-2)
-
-    # import matplotlib.pyplot as plt
-    # plt.plot(sol.ts, sol.ys)
-    # plt.show()
-    transition = EulerMaruyama(sde, dt=1e-2)
-    print(transition)
