@@ -100,23 +100,3 @@ class GaussianLikelihood(Likelihood):
     def _sample(self, x, u, key):
         mean = self.observation_function(x, u)
         return mean + self.sigma * jr.normal(key, shape=x.shape)
-
-
-if __name__ == '__main__':
-    p0 = GaussianLikelihood(jnp.array([1., 1.]))
-    key = jr.PRNGKey(0)
-    y = jnp.array([1., 1.])
-    xs = jr.normal(key, shape=(10, 2))
-    u = jnp.array([1., 1.])
-    mean = p0.observation_function(xs, u)
-    print(p0.log_prob(y, xs, u))
-
-    p1 = GaussianLikelihood(jnp.array([1., 1.]), SubIdentity([0]))
-    print(p1)
-    y = jnp.array([1.])
-    print(p1.log_prob(y, xs, u))
-
-    p2 = GaussianLikelihood(jnp.array([1., 1.]), SingleStateSelector(0))
-    print(p2)
-    y = 1.0
-    print(p2.log_prob(y, xs, u))
