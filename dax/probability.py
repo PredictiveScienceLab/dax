@@ -53,13 +53,4 @@ class DiagonalGaussian(ProbabilityDensity):
     
     def _sample(self, key):
         return self.mean + self.sigma * jr.normal(key, shape=self.mean.shape)
-
-
-if __name__ == '__main__':
-    p0 = DiagonalGaussian(jnp.array([0., 0.]), jnp.array([1., 1.]))
-    print(p0)
-    key = jr.PRNGKey(0)
-    keys = jr.split(key, 10)
-    x0s = p0.sample(keys)
-    print(x0s)
-    print(p0.log_prob(x0s))
+    
