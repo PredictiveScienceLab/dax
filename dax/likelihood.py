@@ -99,4 +99,4 @@ class GaussianLikelihood(Likelihood):
     
     def _sample(self, x, u, key):
         mean = self.observation_function(x, u)
-        return mean + self.sigma * jr.normal(key, shape=x.shape)
+        return mean + self.sigma * jr.normal(key, shape=mean.shape)
