@@ -15,6 +15,7 @@ import jax.numpy as jnp
 import equinox as eqx
 from functools import partial
 import optax
+import lineax as lx
 
 
 class DuffingControl(dax.ControlFunction):
@@ -67,7 +68,8 @@ class Duffing(dax.StochasticDifferentialEquation):
         # We won't train sigma_x and sigma_v
         sigma_x = jax.lax.stop_gradient(self.sigma_x)
         sigma_v = jax.lax.stop_gradient(self.sigma_v)
-        return jnp.array([sigma_x, sigma_v])
+        diagonal = jnp.array([sigma_x, sigma_v])
+        return lx.DiagonalLinearOperator(diagonal)
     
 
 if __name__ == '__main__':
