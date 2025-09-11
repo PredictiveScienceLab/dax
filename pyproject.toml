@@ -1,16 +1,37 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "dax"
-version = "0.0.a0"
+dynamic = ["version"]
 description = "Dynamical system filtering, smoothing, and identification in Jax."
 readme = "README.md"
 requires-python =">=3.9"
 license = {file = "LICENSE"}
 authors = [
   {name = "Ilias Bilionis", email = "ibilion@purdue.edu"},
+  {name = "Wesley Holt", email = "holtw@purdue.edu"}
 ]
 keywords = ["particle-filters", "particle-smoothing", "expectation-maximization", "particle-MCMC"]
+dependencies = [
+  "diffrax",
+  "optax",
+  "blackjax",
+  "seaborn",
+  "numpyro",
+  "pyyaml",
+  "plotly",
+  "dash",
+  "pandas",
+  "nbformat",
+  "SALib"
+]
 
 [tool.pytest.ini_options]
 pythonpath = [
   "."
 ]
+
+[tool.hatch.version]
+path = "src/dax/__about__.py"
