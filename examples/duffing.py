@@ -15,7 +15,6 @@ import jax.numpy as jnp
 import equinox as eqx
 from functools import partial
 import optax
-import lineax as lx
 
 
 class DuffingControl(dax.ControlFunction):
@@ -68,8 +67,7 @@ class Duffing(dax.StochasticDifferentialEquation):
         # We won't train sigma_x and sigma_v
         sigma_x = jax.lax.stop_gradient(self.sigma_x)
         sigma_v = jax.lax.stop_gradient(self.sigma_v)
-        diagonal = jnp.array([sigma_x, sigma_v])
-        return lx.DiagonalLinearOperator(diagonal)
+        return jnp.array([sigma_x, sigma_v])
     
 
 if __name__ == '__main__':
@@ -124,9 +122,9 @@ if __name__ == '__main__':
     us_test = us[t_train:]
 
     fig, ax = plt.subplots()
-    ax.plot(ts, xs[:, 0], label='r$X_t$')
-    ax.plot(ts, xs[:, 1], label='r$\\dot{X}_t$')
-    ax.plot(ts, ys, 'k.', label='r$Y_t$', alpha=0.5)
+    ax.plot(ts, xs[:, 0], label=r'$X_t$')
+    ax.plot(ts, xs[:, 1], label=r'$\dot{X}_t$')
+    ax.plot(ts, ys, 'k.', label=r'$Y_t$', alpha=0.5)
     ax.legend(frameon=False)
     ax.set_xlabel('Time')
     ax.set_ylabel('Value')

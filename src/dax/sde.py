@@ -84,7 +84,7 @@ class StochasticDifferentialEquation(eqx.Module):
         """Sample a path from the SDE."""
         from diffrax import diffeqsolve, ControlTerm, Euler, MultiTerm, ODETerm, SaveAt, VirtualBrownianTree
         drift = lambda t, x, args: self.drift(x, self.control_function._eval(t))
-        diffusion = lambda t, x, args: self.diffusion(x, self.control_function._eval(t))
+        diffusion = lambda t, x, args: jnp.diag(self.diffusion(x, self.control_function._eval(t)))
         brownian_motion = VirtualBrownianTree(t0, t1, tol=1e-3, shape=(x0.shape[0],), key=key)
         terms = MultiTerm(ODETerm(drift), ControlTerm(diffusion, brownian_motion))
         solver = Euler()

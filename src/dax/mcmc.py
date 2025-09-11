@@ -49,7 +49,7 @@ class ParticleMCMC(eqx.Module):
         
         key, subkey = jax.random.split(key)
         dtheta = self.proposal(subkey, theta_prev)
-        theta_next = jax.tree_map(lambda x, dx: x + dx, theta_prev, dtheta)
+        theta_next = jax.tree.map(lambda x, dx: x + dx, theta_prev, dtheta)
    
         key, subkey = jax.random.split(key)
         ssm_next = self.ssm_from_theta(theta_next)
