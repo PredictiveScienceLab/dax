@@ -1,9 +1,0 @@
-- probability over the initial state is what is implicit in the SSM class
-- probability over the parameters in the ode sense is a seperate thing, handled at the mcmc algorithm level.  
-- probability due to stochastic dynamics is captured by the TransitionProbability object
-- need to create a new construct - Bayesian State Space Model
-- for odes, define a new construct that represents determinstic dynamics with prob dist over parameters
-- need to somehow come up with a log probability function for this new construct...or leave it unsupported
-- likelihood can stay as it is - seems to only depend on the states, control, ans output
-- internally, there should be a single pytree theta with all parameters (including initial condition parameters)
-- but, we can include an interface where you specify the initial state and parameter distributions separately
