@@ -13,6 +13,8 @@ from .markov import *
 from .likelihood import *
 from .particle_approximation import *
 from .ssm import *
+from .control import *
+from .ode import *
 from .sde import *
 from .filter import *
 from .smooth import *
