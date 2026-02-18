@@ -14,9 +14,16 @@ from .probability import ProbabilityDensity
 from .markov import TransitionProbability
 from .likelihood import Likelihood
 from .particle_approximation import ParticleApproximation, TrajectoryParticleApproximation
+from .ode import OrdinaryDifferentialEquation
 
+class StateSpaceModelWithDeterministicDynamics(eqx.Module):
+    x0: ProbabilityDensity
+    ode: OrdinaryDifferentialEquation
+    likelihood: Likelihood
 
-class StateSpaceModel(eqx.Module):
+    
+
+class StateSpaceModelWithStochasticDynamics(eqx.Module):
     """A class that represents a state space model."""
 
     x0: ProbabilityDensity
