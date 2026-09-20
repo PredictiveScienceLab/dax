@@ -28,7 +28,7 @@ class ProbabilityDensity(eqx.Module):
     @partial(vmap, in_axes=(None, 0))
     def log_prob(self, x):
         return self._log_prob(x)
-    
+
     @eqx.filter_jit
     @partial(vmap, in_axes=(None, 0))
     def sample(self, key):
@@ -43,14 +43,18 @@ class DiagonalGaussian(ProbabilityDensity):
     @property
     def sigma(self):
         return jnp.exp(self.log_sigma)
-    
+
     def __init__(self, mean, sigma):
         self.mean = jnp.array(mean)
         self.log_sigma = jnp.log(sigma)
     
     def _log_prob(self, x):
-        return -0.5 * jnp.sum( ((x - self.mean) / self.sigma) ** 2) - jnp.sum(self.log_sigma)
-    
+        standardized = (x - self.mean) / self.sigma
+        return -0.5 * jnp.sum(
+            standardized ** 2
+            + 2.0 * self.log_sigma
+            + jnp.log(2.0 * jnp.pi)
+        )
+
     def _sample(self, key):
         return self.mean + self.sigma * jr.normal(key, shape=self.mean.shape)
-    

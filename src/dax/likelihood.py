@@ -95,7 +95,12 @@ class GaussianLikelihood(Likelihood):
     
     def _log_prob(self, y, x, u):
         mean = self.observation_function(x, u)
-        return -0.5 * jnp.sum( ((y - mean) / self.sigma) ** 2) - jnp.sum(self.log_sigma)
+        standardized = (y - mean) / self.sigma
+        return -0.5 * jnp.sum(
+            standardized ** 2
+            + 2.0 * self.log_sigma
+            + jnp.log(2.0 * jnp.pi)
+        )
     
     def _sample(self, x, u, key):
         mean = self.observation_function(x, u)

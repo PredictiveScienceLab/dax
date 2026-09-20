@@ -59,7 +59,7 @@ class StochasticDifferentialEquation(eqx.Module):
         - X_t is d-dimensional (d is unspecified)
         - u_t is an arbitrary vector
         - drift(X_t, u_t) is d-dimensional
-        - diffusion(X_t, u_t) is a diagonal matrix
+        - diffusion(X_t, u_t) contains the diagonal diffusion amplitudes
         - W_t is a d-dimensional Wiener measure
 
     """
@@ -112,7 +112,12 @@ class EulerMaruyama(TransitionProbability):
     def _log_prob(self, x_next, x_prev, u):
         drift = self.sde.drift(x_prev, u)
         diffusion = self.sde.diffusion(x_prev, u)
-        return jnp.sum(-0.5 * ((x_next - x_prev - drift * self.dt) / diffusion) ** 2) - jnp.sum(jnp.log(diffusion))
+        mean = x_prev + drift * self.dt
+        variance = diffusion ** 2 * self.dt
+        return -0.5 * jnp.sum(
+            (x_next - mean) ** 2 / variance
+            + jnp.log(2.0 * jnp.pi * variance)
+        )
     
     def _sample(self, x_prev, u, key):
         drift = self.sde.drift(x_prev, u)

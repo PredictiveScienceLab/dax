@@ -75,7 +75,8 @@ class ParticleMCMC(eqx.Module):
         """Run the Particle MCMC algorithm."""
         log_prior = self.prior.log_prob(theta)
         ssm = self.ssm_from_theta(theta)
-        _, log_L = self.filter.filter(ssm, us, ys, key)
+        key, filter_key = jax.random.split(key)
+        _, log_L = self.filter.filter(ssm, us, ys, filter_key)
         state = (theta, log_L, log_prior, key, us, ys)
         state, results = jax.lax.scan(lambda state, _: self.step(state), state, jnp.arange(num_steps))
         return state, results
