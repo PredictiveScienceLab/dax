@@ -40,9 +40,9 @@ class BootstrapFilter(Filter):
         def f(carry, uy):
             pa, key, log_L_prev = carry
             u, y = uy
-            key, subkey = jr.split(key)
-            tilde_pa = pa.resample(subkey)
-            keys = jr.split(subkey, self.num_particles)
+            key, resampling_key, propagation_key = jr.split(key, 3)
+            tilde_pa = pa.resample(resampling_key)
+            keys = jr.split(propagation_key, self.num_particles)
             x_next = ssm.transition.sample(tilde_pa.particles, u, keys)
             log_w_next = ssm.likelihood.log_prob(y, x_next, u)
             log_L_next = log_L_prev + jax.scipy.special.logsumexp(log_w_next) - jnp.log(self.num_particles)
